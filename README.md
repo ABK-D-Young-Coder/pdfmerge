@@ -1,52 +1,65 @@
 # PDF Merge
 
-A lightweight browser-only PDF merge tool that combines multiple PDF files locally in the browser. It runs inside a Web Worker, keeps all processing on-device, and downloads the merged result as a PDF without requiring any backend or build tools.
+A privacy-first PDF merging tool built as a single static file for GitHub Pages. It lets you upload, reorder, sort, and merge multiple PDF documents directly in your browser with no upload, no backend, and no installation.
+
+## What it does
+
+- Merges two or more PDF files locally in the browser
+- Supports drag-and-drop, click-to-select, and paste-from-clipboard workflows
+- Reorders files by drag, move buttons, or sort options
+- Detects duplicates by file name and size
+- Saves the final merged file with a custom output name
+- Works in a dark or light theme and is mobile-friendly
 
 ## Privacy guarantee
 
-Files are never uploaded to a server. The app reads PDFs in the browser, merges them locally with `pdf-lib`, and keeps the generated result in memory until you download it. Nothing leaves your device during the merge process.
+Files are never uploaded to a server. All PDF reading, page merging, and file generation happen locally in the browser. The app uses `pdf-lib` and a Web Worker so the UI remains responsive while processing is happening on the user’s device only.
 
 ## Deploy on GitHub Pages
 
-1. Create a new GitHub repository or use an existing one.
-2. Add a file named `index.html` at the repository root.
-3. Commit and push the file to the default branch.
-4. Open the repository in GitHub.
-5. Go to `Settings` → `Pages`.
-6. Under `Build and deployment`, set:
+1. Upload the repository files to GitHub.
+2. Open the repository in GitHub.
+3. Go to `Settings` → `Pages`.
+4. Under `Build and deployment`, select:
    - Source: `Deploy from a branch`
-   - Branch: `main` (or the branch you use)
+   - Branch: `main`
    - Folder: `/ (root)`
-7. Save the settings.
-8. After GitHub Pages finishes publishing, the app will be available at:
+5. Save.
+6. GitHub will publish the site at:
    `https://<username>.github.io/<repo>/`
 
 ## Browser support notes
 
-This app is designed to work in modern desktop and mobile browsers, including:
+The app is designed for modern desktop and mobile browsers, including:
 - Chrome
 - Edge
 - Firefox
 - Safari
 - iOS Safari
-- Mobile Chrome on Android
+- Android Chrome
 
-The code uses standard browser APIs, Web Workers, Blob URLs, and `pdf-lib`. Some browser-specific download behavior is handled with a persistent download link to make the flow work reliably on mobile Safari.
+The project includes a download fallback for mobile browsers so the final merged PDF remains easy to save even when automatic downloads are restricted.
 
 ## How it works
 
-- `pdf-lib` loads from jsDelivr and is used to create a new PDF document, copy pages from each input PDF, and save the merged output.
-- Merging runs in a Web Worker so the browser UI stays responsive while large files are processed.
-- The worker is created from an inline Blob URL inside the single `index.html` file, so no separate worker file is needed.
-- If the worker fails, stalls, or never responds, the app automatically falls back to a main-thread merge after a 20-second watchdog timer.
-- The merged file is exposed as a Blob URL, and a persistent download link is displayed so the user can click to save the result. A hidden anchor also attempts a direct auto-download when possible.
+- `pdf-lib` is loaded from jsDelivr.
+- A single `index.html` file contains the full landing page and merging app.
+- The merge job runs in a Web Worker so the UI stays responsive.
+- If the worker fails or stalls, the app falls back to a main-thread merge automatically.
+- The final PDF is converted to a Blob and downloaded through a persistent anchor for compatibility with mobile Safari.
+
+## Extra features included
+
+- Landing page with product-style overview and sections
+- Secure local workflow messaging
+- Duplicate detection and skipped-file notices
+- Theme persistence with localStorage
+- Output filename persistence with localStorage
+- Drag-to-reorder file list
+- Mobile-friendly layout and controls
 
 ## Files included
 
-- `index.html` — complete application
+- `index.html` — complete landing page and PDF merge tool
 - `README.md` — project documentation
 - `LICENSE` — MIT license
-
-## Notes
-
-This project is intentionally static and dependency-free apart from the CDN-hosted `pdf-lib` script. It is built to run as a GitHub Pages site with no build step, bundler, or server-side code.
